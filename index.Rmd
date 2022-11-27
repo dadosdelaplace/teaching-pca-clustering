@@ -1861,11 +1861,18 @@ heatmaply(iris_sample,
 # Visualización previa
 
 
-Podemos mejorar la representación **estandarizando** las variables.
+Podemos mejorar la representación **estandarizando por rango** las variables, haciendo uso de `rescale()` del paquete `{scales}`
 
 ```{r eval = FALSE}
-heatmaply(iris_sample %>%  mutate(across(where(is.numeric), ~scale(.))),
-          seriate = "mean", row_dend_left = TRUE, plot_method = "plotly")
+library(scales)
+iris_range <- 
+  iris_sample %>%
+  mutate(across(where(is.numeric), rescale))
+
+heatmaply(iris_range,
+          seriate = "mean",
+          row_dend_left = TRUE,
+          plot_method = "plotly")
 ```
 
 ---
@@ -1874,8 +1881,12 @@ heatmaply(iris_sample %>%  mutate(across(where(is.numeric), ~scale(.))),
 # Visualización previa
 
 ```{r echo = FALSE}
-heatmaply(iris_sample %>%
-            mutate(across(where(is.numeric), ~scale(.))),
+library(scales)
+iris_range <- 
+  iris_sample %>%
+  mutate(across(where(is.numeric), rescale))
+
+heatmaply(iris_range,
           seriate = "mean",
           row_dend_left = TRUE,
           plot_method = "plotly")
@@ -1889,8 +1900,7 @@ heatmaply(iris_sample %>%
 Con `seriate = ...` podemos cambiar el método de ordenación para una mejor visualización
 
 ```{r eval = FALSE}
-heatmaply(iris_sample %>% 
-            mutate(across(where(is.numeric), ~scale(.))),
+heatmaply(iris_range,
           seriate = "OLO",
           row_dend_left = TRUE,
           plot_method = "plotly")
@@ -1901,8 +1911,7 @@ heatmaply(iris_sample %>%
 # Visualización previa
 
 ```{r echo = FALSE}
-heatmaply(iris_sample %>%
-            mutate(across(where(is.numeric), ~scale(.))),
+heatmaply(iris_range,
           seriate = "OLO",
           row_dend_left = TRUE,
           plot_method = "plotly")
@@ -1916,9 +1925,7 @@ Otra forma de ver las relaciones entre individuos es calcular su **matriz de dis
 
 
 ```{r}
-d <- dist(iris_sample %>%
-            select(-Species) %>% 
-            mutate(across(where(is.numeric), ~scale(.))),
+d <- dist(iris_range %>% select(-Species),
           method = "euclidean")
 d
 ```
@@ -2055,14 +2062,8 @@ fviz_dend(single_clust, k = 3,
 Con `fviz_cluster()` visualizaremos los clústers en base a las dos componentes que más varianza capturen
 
 ```{r eval = FALSE}
-# Estandarizamos datos
-iris_scale <-
-  iris_sample %>%
-  select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2078,13 +2079,8 @@ fviz_cluster(list(data = iris_scale,
 .pull-right[
 
 ```{r echo = FALSE}
-iris_scale <-
-  iris_sample %>%
-  select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2106,22 +2102,13 @@ fviz_cluster(list(data = iris_scale,
 Así quedaría con todas las observaciones
 
 ```{r eval = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
 # Clustering (single)
 single_clust <-
   hclust(d, method = "single")
 groups <- cutree(single_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2137,21 +2124,14 @@ fviz_cluster(list(data = iris_scale,
 .pull-right[
 
 ```{r echo = FALSE}
-iris_scale <-
-  iris %>%
-  select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <- dist(iris_scale, method = "euclidean")
-
 # Clustering (single)
 single_clust <-
   hclust(d, method = "single")
 groups <- cutree(single_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale, cluster = groups),
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
+                  cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
              ellipse.type = "convex", 
@@ -2220,22 +2200,13 @@ fviz_dend(complete_clust, k = 3,
 .pull-left[
 
 ```{r eval = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
 # Clustering (single)
 complete_clust <-
   hclust(d, method = "complete")
 groups <- cutree(complete_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2251,22 +2222,13 @@ fviz_cluster(list(data = iris_scale,
 .pull-right[
 
 ```{r echo = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
 # Clustering (single)
 complete_clust <-
   hclust(d, method = "complete")
 groups <- cutree(complete_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2339,22 +2301,13 @@ fviz_dend(average_clust, k = 3,
 .pull-left[
 
 ```{r eval = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
 # Clustering (single)
 average_clust <-
   hclust(d, method = "average")
 groups <- cutree(average_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2370,22 +2323,13 @@ fviz_cluster(list(data = iris_scale,
 .pull-right[
 
 ```{r echo = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
 # Clustering (single)
 average_clust <-
   hclust(d, method = "average")
 groups <- cutree(average_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2459,22 +2403,13 @@ fviz_dend(centroid_clust, k = 3,
 .pull-left[
 
 ```{r eval = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
 # Clustering (centroid)
 centroid_clust <-
   hclust(d, method = "centroid")
 groups <- cutree(centroid_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2490,22 +2425,13 @@ fviz_cluster(list(data = iris_scale,
 .pull-right[
 
 ```{r echo = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
 # Clustering (centroid)
 centroid_clust <-
   hclust(d, method = "centroid")
 groups <- cutree(centroid_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2529,7 +2455,7 @@ fviz_cluster(list(data = iris_scale,
 * **Método de Ward** (mínima varianza): de todas las posibles aglomeraciones, selecciona aquella que **minimiza la variabilidad interna**
 
 
-$$W = \sum_{k=1}^{G} W_k, \quad W_k = \sum_{\boldsymbol{X_i} \in C_k} \sum_{j=1}^{p} \left(x_{i,j} - \overline{x}_{j}^{k} \right)$$
+$$W = \sum_{k=1}^{G} W_k, \quad W_k = \sum_{\boldsymbol{X_i} \in C_k} \sum_{j=1}^{p} \left(x_{i,j} - \overline{x}_{j}^{k} \right)^2$$
 
 donde $\overline{x}_{j}^{k}$ es la coordenada j-ésima del centroide $k$.
 
@@ -2580,22 +2506,13 @@ fviz_dend(ward_clust, k = 3,
 .pull-left[
 
 ```{r eval = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
 # Clustering (ward)
 ward_clust <-
   hclust(d, method = "ward.D2")
 groups <- cutree(ward_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2611,22 +2528,13 @@ fviz_cluster(list(data = iris_scale,
 .pull-right[
 
 ```{r echo = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
 # Clustering (ward)
 ward_clust <-
   hclust(d, method = "ward.D2")
 groups <- cutree(ward_clust, k = 3)
 
-fviz_cluster(list(data = iris_scale,
+fviz_cluster(list(data = iris_range %>%
+                    select(-Species),
                   cluster = groups),
              palette =
                c("#2E9FDF", "#00AFBB", "#E7B800"),
@@ -2668,17 +2576,6 @@ fviz_dend(hc_diana , k = 3,
 .pull-right[
 
 ```{r echo = FALSE}
-# Estandarizamos
-iris_scale <-
-  iris %>% select(-Species) %>% 
-  mutate(across(where(is.numeric),
-                ~scale(.)))
-
-# Matriz de distancias
-d <-
-  dist(iris_scale, method = "euclidean")
-
-
 library(cluster)
 hc_diana <- diana(x = d, diss = TRUE, stand = FALSE)
 
@@ -3006,7 +2903,7 @@ Para decidir el **número óptimo** se usan principalmente dos métodos:
 
 
 ```{r eval = FALSE}
-fviz_nbclust(iris_scale, kmeans,
+fviz_nbclust(iris_range, kmeans,
              method = "wss") +
   geom_vline(xintercept = 3,
              linetype = 2) +
@@ -3023,7 +2920,8 @@ Con el **«método del codo» (Elbow method)** cuando $W$ ya no se reduce de for
 .pull-right[
 
 ```{r echo = FALSE}
-fviz_nbclust(iris_scale, kmeans, method = "wss") +
+fviz_nbclust(iris_range %>%
+                    select(-Species), kmeans, method = "wss") +
   geom_vline(xintercept = 3, linetype = 2) +
   theme_minimal() +
   labs(x = "nº clústeres (k)",
@@ -3086,7 +2984,9 @@ $$S= \frac{\sum_{i=1}^{n} S(i)}{n}, \quad S(i) = \frac{b(i) - a(i)}{\max(a(i), b
 donde $a(i)$ representa las **distancia media de la observación i-ésima** a las observaciones de su clúster, y y $b(i)$ respecto a la de otros clústers.
 
 ```{r eval = FALSE}
-fviz_nbclust(iris_scale, kmeans,
+fviz_nbclust(iris_range %>%
+               select(-Species),
+             kmeans,
              method = "silhouette") +
   theme_minimal() +
   labs(x = "nº clústeres (k)",
@@ -3099,7 +2999,8 @@ fviz_nbclust(iris_scale, kmeans,
 .pull-right[
 
 ```{r echo = FALSE}
-fviz_nbclust(iris_scale, kmeans,
+fviz_nbclust(iris_range %>%
+                    select(-Species), kmeans,
              method = "silhouette") +
   theme_minimal() +
   labs(x = "nº clústeres (k)",
@@ -3116,9 +3017,9 @@ fviz_nbclust(iris_scale, kmeans,
 La función `silhouette()` del paquete `{cluster}` nos permite calcular dicho índice para la agrupación realizada (más adelante veremos como visualizarlo)
 
 ```{r}
-kclust <- kmeans(iris_scale,
-                 centers = 3, iter.max = 50)
-d <- dist(iris_scale, method = "euclidean")
+kclust <-
+  kmeans(iris_range %>% select(-Species),
+         centers = 3, iter.max = 50)
 sil <- silhouette(kclust$cluster, d)
 sil
 ```
@@ -3188,14 +3089,14 @@ knitr::include_graphics("./img/heatmap_paises_1.jpg")
 
 .pull-left[
 
-Dicha representación puede ser mejorada estandarizando los datos
+Dicha representación puede ser mejorada **estandarizando los datos por rango**
 
 ```{r eval = FALSE}
 # Estandarizamos
 esperanza_scale_df <-
   esperanza_df %>%
   mutate(across(where(is.numeric),
-                ~scale(.)))
+                rescale))
 
 heatmaply(esperanza_scale_df,
           seriate = "mean",
@@ -3211,7 +3112,7 @@ heatmaply(esperanza_scale_df,
 esperanza_scale_df <-
   esperanza_df %>%
   mutate(across(where(is.numeric),
-                ~scale(.)))
+                rescale))
 ```
 
 ```{r echo = FALSE, out.width = "95%", fig.align = "right"}
@@ -3402,57 +3303,6 @@ fviz_dend(average_clust, k = 4,
           #añade un rectángulo alrededor
           rect = TRUE) +
   labs(title = "Dendograma (average)")
-```
-
-]
-
----
-
-
-# Clustering de países
-
-### Clustering (centroid)
-
-.pull-left[
-
-```{r eval = FALSE}
-# Clustering (centroid)
-centroid_clust <-
-  hclust(d, method = "centroid")
-
-# Dendograma
-fviz_dend(centroid_clust, k = 4,
-          cex = 0.5, 
-          k_colors =
-            c("#2E9FDF", "#00AFBB",
-              "#E7B800", "#FC4E07"),
-          # Diferentes colores a los clusters
-          color_labels_by_k = TRUE, 
-          #añade un rectángulo alrededor
-          rect = TRUE) +
-  labs(title = "Dendograma (centroid)")
-```
-
-]
-
-.pull-right[
-
-```{r echo = FALSE}
-# Clustering (centroid)
-centroid_clust <-
-  hclust(d, method = "centroid")
-
-# Dendograma
-fviz_dend(centroid_clust, k = 4,
-          cex = 0.5, 
-          k_colors =
-            c("#2E9FDF", "#00AFBB",
-              "#E7B800", "#FC4E07"),
-          # Diferentes colores a los clusters
-          color_labels_by_k = TRUE, 
-          #añade un rectángulo alrededor
-          rect = TRUE) +
-  labs(title = "Dendograma (centroid)")
 ```
 
 ]
@@ -3661,97 +3511,6 @@ fviz_cluster(list(data = esperanza_scale_df,
 
 ---
 
-# Clustering de países
-
-### Comparativa de clusterings
-
-.pull-left[
-
-```{r echo = FALSE}
-groups <- cutree(average_clust, k = 4)
-
-fviz_cluster(list(data = esperanza_scale_df,
-                  cluster = groups),
-             palette =
-               c("#2E9FDF", "#00AFBB",
-                 "#E7B800", "#FC4E07"),
-             ellipse.type = "convex", 
-             repel = TRUE,
-             show.clust.cent = FALSE) +
-  labs(title = "Cluster (average)") +
-  theme_minimal()
-```
-
-]
-
-.pull-right[
-
-```{r echo = FALSE}
-groups <- cutree(centroid_clust, k = 4)
-
-fviz_cluster(list(data = esperanza_scale_df,
-                  cluster = groups),
-             palette =
-               c("#2E9FDF", "#00AFBB",
-                 "#E7B800", "#FC4E07"),
-             ellipse.type = "convex", 
-             repel = TRUE,
-             show.clust.cent = FALSE) +
-  labs(title = "Cluster (centroid)") +
-  theme_minimal()
-```
-
-]
-
----
-
-# Clustering de países
-
-### Comparativa de clusterings
-
-.pull-left[
-
-```{r echo = FALSE}
-groups <- cutree(ward_clust, k = 4)
-
-fviz_cluster(list(data = esperanza_scale_df,
-                  cluster = groups),
-             palette =
-               c("#2E9FDF", "#00AFBB",
-                 "#E7B800", "#FC4E07"),
-             ellipse.type = "convex", 
-             repel = TRUE,
-             show.clust.cent = FALSE) +
-  labs(title = "Cluster (Ward)") +
-  theme_minimal()
-```
-
-]
-
-.pull-right[
-
-
-```{r echo = FALSE}
-# Clustering k-means
-kclust <- kmeans(esperanza_scale_df,
-                 centers = 4, iter.max = 50)
-
-# Clustering
-fviz_cluster(list(data = esperanza_scale_df,
-                  cluster = kclust$cluster),
-             palette =
-               c("#2E9FDF", "#00AFBB",
-                 "#E7B800", "#FC4E07"),
-             ellipse.type = "convex", 
-             repel = TRUE,
-             show.clust.cent = FALSE) +
-  labs(title = "Cluster (k-means)") +
-  theme_minimal()
-```
-
-]
-
----
 
 # Clustering de países
 
