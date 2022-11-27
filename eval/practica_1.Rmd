@@ -1,0 +1,326 @@
+---
+title: "Práctica I"
+description: |
+  Análisis de componentes principales
+author:
+  - name: C. Tangana (DNI 0000000-A)
+    affiliation: Universidad Complutense de Madrid
+    affiliation_url: 
+date: "`r Sys.Date()`"
+output:
+    distill::distill_article:
+        highlight: kate
+        colorlinks: true
+        code_folding: false
+        toc: true            
+        toc_depth: 3     
+---
+
+```{r setup, include = FALSE}
+# Ajuste comunes de los chunk
+knitr::opts_chunk$set(fig.width = 9, fig.asp = 1, out.width = "100%",
+                      message = FALSE, warning = FALSE,
+                      echo = TRUE, res = 400)
+```
+
+# Instrucciones (leer antes de empezar)
+
+* Modifica dentro del documento `.Rmd` tus datos personales (nombre y DNI) ubicados en la cabecera del archivo.
+
+* Asegúrate antes de seguir editando el documento que el archivo `.Rmd` compila (Knit) correctamente y se genera el `html` correspondiente.
+
+* Los chunks creados están o vacíos o incompletos, de ahí que tengan la opción `eval = FALSE`. Una vez que edites lo que consideres debes de cambiar a `eval = TRUE` para que los chunk se ejecuten
+
+## Paquetes necesarios
+
+Necesitaremos los siguientes paquetes:
+
+```{r paquetes}
+# Borramos variables del environment
+rm(list = ls())
+library(readxl)
+library(skimr)
+library(corrr)
+library(corrplot)
+library(ggforce)
+library(ggthemes)
+library(tidyverse)
+library(tidymodels)
+library(factoextra)
+library(FactoMineR)
+```
+
+
+# Carga de datos
+
+El archivo de datos a usar será `distritos.xlsx`
+
+```{r}
+distritos <- read_xlsx(path = "./distritos.xlsx")
+```
+
+El fichero contiene **información socioeconómica de los distritos de Madrid**
+
+```{r}
+glimpse(distritos)
+```
+
+
+Las variables recopilan la siguiente información:
+
+* `Distrito`: nombre del distrito
+* `Superficie`: superficie del distrito (hectáreas)
+* `Densidad`: densidad de población
+* `Pob_0_14`: proporción de población menor de 14 años
+* `Pob_15_29`: proporción de población de 15 a 29
+* `Pob_30_44`: proporción de población de 30 a 44
+* `Pob_45_64`: proporción de población de 45 a 64
+* `Pob_65+`: proporción de población de 65 o mas
+* `N_Española`: proporción de población española
+* `Extranjeros`: proporción de población extranjera
+* `N_hogares`: número de hogares en miles
+* `Renta`: renta media en miles
+* `T_paro`: porcentaje de población parada
+* `T_paro_H`: porcentaje de hombres parados
+* `T_paro_M`: porcentaje de mujeres paradas
+* `Paro_LD`: proporción de población parada de larga duración
+* `Analfabetos`: proporción de población que no sabe leer ni escribir
+* `Primaria_inc`: proporción de población solo con estudios primarios
+* `ESO`: proporción de población solo ESO
+* `fp_bach`: proporción de población solo con FP o Bachillerato
+* `T_medios`: proporción de población Titulada media
+* `T_superiores`: proporción de población con estudios superiores
+* `S_M2_vivienda`: superficie media de la vivienda
+* `Valor_V`: valor catastral medio de la vivienda
+* `Partido`: partido más votado en las municipales 2019
+
+
+
+
+# Ejercicio 1:
+
+
+> Calcula los estadísticos básicos de todas las variables con la función `skim()` del paquete `{skimr}`
+
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+distritos %>% ...
+```
+
+# Ejercicio 2
+
+> Selecciona solo las variables numéricas
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+distritos_num <-
+  distritos %>% ...
+```
+
+# Ejercicio 3
+
+> Calcula la matriz de covarianzas (guárdala en `cov_mat`)
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+cov_mat <-
+  cov(distritos %>% ...)
+cov_mat
+```
+
+> Calcula la matriz de correlaciones de forma numérica (guárdala en `cor_mat`). Visualiza dicha matriz haciendo uso de `{corrplot}`. Responde además a las preguntas: ¿cuáles son las variables más correlacionadas (linealmente)? ¿Cómo es el sentido de esa correlación?
+
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+cor_mat <-
+  distritos %>% ...
+cor_mat
+```
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+corrplot(..., type = "upper",
+         tl.col = "black",  method = "ellipse")
+```
+
+# Ejercicio 4
+
+> Haciendo uso de `{ggplot2}`, representa los gráficos de dispersión de las variables T_paro (eje y) con relación a Analfabetos (eje x). Realiza un nuevo gráfico visualizando T_paro en relación a T_superiores. Comentar el sentido de las nubes de puntos, junto con las correlaciones obtenidas anteriormente. Personaliza el gráfico todo lo que puedas.
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+ggplot(distritos, aes(x = ..., y = ...)) +
+  geom_point(size = 7, alpha = 0.6) +
+  labs(x = ..., y = ...,
+       title = ...) +
+  theme_minimal()
+```
+
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+ggplot(distritos, aes(x = ..., y = ...)) +
+  geom_point(size = 7, alpha = 0.6) +
+  labs(x = ..., y = ...,
+       title = ...) +
+  theme_minimal()
+```
+
+# Ejercicio 5
+
+> Haciendo uso de los paquetes `{FactoMineR}` y `{factoextra}`, realiza un análisis de componentes principales y guárdalo en el objeto `pca_fit`
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+pca_fit <- PCA(...)
+```
+
+## Ejercicio 5.1
+
+> Obtén los autovalores asociados y detalla los resultados. ¿Cuánto explica la primera componente? ¿Cuánto explican las primeras 10 componentes? Si fijáramos un umbral de varianza explicada del 95%, ¿cuántas componentes deberíamos usar?
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+pca_fit$...
+```
+
+> Visualiza la varianza explicada por cada componente haciendo uso de `fviz_eig()`. Personaliza el gráfico todo lo que consideres
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+fviz_eig(...,
+         addlabels = TRUE) +
+  theme_minimal() +
+  labs(...)
+```
+
+## Ejercicio 5.2
+
+> Obtén los autovectores (por columnas). Escribe de manera explícita la expresión de la tres primeras componentes (como combinación lineal de las variables originales).
+
+
+```{r eval = FALSE}
+# Completa el código para obtener los loadings
+pca_fit$...
+```
+
+$$\Phi_1 = ... + ... + ... + ... $$
+$$\Phi_2 = ... + ... + ... + ... $$
+$$\Phi_3 = ... + ... + ... + ... $$
+
+## Ejercicio 5.3
+
+> Obtén las nuevas coordenadas (scores) de las observaciones proyectados en las nuevas direcciones
+
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+pca_fit$...
+```
+
+
+# Ejercicio 6
+
+> Con el número de componentes (anteriormente determinado) que necesitamos para explicar al menos el 95% de varianza, repite el mismo análisis que en el ejercicio 5.
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE 
+```
+
+## Ejercicio 6.1 
+
+> Ejecuta el código inferior y detalla cada una de las salidas. Detalla todo lo que consideres. En particular, ¿qué distritos van a tener características similares? Justifica la respuesta
+
+```{r eval = FALSE}
+# Cambia a eval = TRUE
+pca_fit$ind$coord
+pca_fit$ind$cos2
+pca_fit$ind$contrib
+```
+
+
+## Ejercicio 6.2
+
+> Ejecuta el código inferior y detalla cada una de las salidas. Detalla todo lo que consideres. En particular, ¿qué variables van a estar mejor representadas (la información que contienen) si hacemos uso solo de las 2 primeras componentes? Justifica tu respuesta
+
+```{r eval = FALSE}
+# Cambia a eval = TRUE
+pca_fit$var$coord
+pca_fit$var$cos2
+pca_fit$var$contrib
+```
+
+# Ejercicio 7
+
+> Realiza de nuevo el análisis pero introduciendo todas las variables, incluyendo las cualitativas (sin que sean usadas en la construcción de las nuevas direcciones pero que luego podamos obtener dichas variables proyectadas), con el número de componentes determinadas anteriormente para explicar el 95% de la varianza.
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE
+```
+
+## Ejercicio 7.1
+
+> Ejecuta `fviz_pca_var()` para visualizar las variables respecto a las dos primeras componentes. Asigna el color de las flechas de tal manera que corresponda al módulo (longitud) de la misma. Cambia la paleta de colores que usa para el gradiente de colores como consideres. Detalla todo lo que consideres, en concreto la correlación o independencia lineal de las variables. ¿Qué variables tienen un comportamiento similar? ¿Cuáles están mejor representadas (usando solo las dos primeras componentes)? Prueba a usar también `fviz_cos2()`
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE
+col <- c("#00AFBB", "#E7B800", "#FC4E07")
+fviz_pca_var(..., axes = ...,
+             col.var = ...,
+             gradient.cols = col)
+```
+
+## Ejercicio 7.2
+
+> Ejecuta `fviz_pca_ind()` para visualizar a los distritos respecto a las dos primeras componentes. Usa la variable de partido para visualizar en dos colores distintos los individuos. ¿Qué distritos tienen características similares? Analiza todo lo que consideres
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE
+fviz_pca_ind(..., axes = ..., habillage = ...)
+```
+
+## Ejercicio 7.3
+
+> Haciendo uso del gráfico anterior y de lo que consideres dentro de `pca_fit`, ¿qué representaría (aprox) cada una de las primeras 3 componentes? ¿Qué tipo de información está capturando cada una?
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = TRUE
+```
+
+## Ejercicio 7.4
+
+> Haz uso de `fviz_pca_biplot()` para visualizar los dos gráficos anteriores de forma conjunta y personaliza todo lo que consideres del gráfico. Detalla lo que consideres del gráfico y analiza los grupos de distritos creados en función del partido más votado (le indicamos que el color dependa de dicha variable en `col.ind`)
+
+
+```{r eval = FALSE}
+# Completa el código y cambia a eval = FALSE
+fviz_pca_biplot(pca_fit,
+                col.ind = distritos$Partido,
+                addEllipses = TRUE,
+                label = "var",
+                col.var = "black",
+                repel = TRUE) +
+  ...
+```
+
+
+# Ejercicio 8
+
+> ¿Qué valor tiene el distrito de Salamanca en la Componente 1? ¿Y Villaverde? ¿Qué distrito tiene un valor más alto de la Componente 4? Ejecuta el código que consideres
+
+# Ejercicio 9
+
+> Comenta/concluye todo lo que consideres tras un análisis numérico y visual, y que no haya sido preguntado.
+
+# Ejercicio 10 (extra)
+
+> Haz uso de tidymodels para calcular las componentes y las 5 componentes que más varianza capturan en una matriz de gráficas (la diagonal la propia densidad de las componentes, fuera de la diagonal los datos proyectados en la componente (i,j)). Codifica el color como el partido más votado. Al margen de la varianza explicada, ¿qué par de componentes podrían servirnos mejor para «clasificar» nuestros barrios según el partido más votado (variables que segmenten mejor mi espacio)?
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+
+

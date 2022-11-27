@@ -1,0 +1,196 @@
+---
+title: "Práctica II"
+description: |
+  Análisis clúster
+author:
+  - name: C. Tangana (DNI 0000000-A)
+    affiliation: Universidad Complutense de Madrid
+    affiliation_url: 
+date: "`r Sys.Date()`"
+output:
+    distill::distill_article:
+        highlight: kate
+        colorlinks: true
+        code_folding: false
+        toc: true            
+        toc_depth: 3     
+---
+
+```{r setup, include = FALSE}
+# Ajuste comunes de los chunk
+knitr::opts_chunk$set(fig.width = 9, fig.asp = 1, out.width = "100%",
+                      message = FALSE, warning = FALSE,
+                      echo = TRUE, res = 400)
+```
+
+# Instrucciones (leer antes de empezar)
+
+* Modifica dentro del documento `.Rmd` tus datos personales (nombre y DNI) ubicados en la cabecera del archivo.
+
+* Asegúrate antes de seguir editando el documento que el archivo `.Rmd` compila (Knit) correctamente y se genera el `html` correspondiente.
+
+* Los chunks creados están o vacíos o incompletos, de ahí que tengan la opción `eval = FALSE`. Una vez que edites lo que consideres debes de cambiar a `eval = TRUE` para que los chunk se ejecuten
+
+## Paquetes necesarios
+
+Necesitaremos los siguientes paquetes:
+
+* **Manejo de datos**: paquete `{tidyverse}`.
+* **Modelos**: paquete `{tidymodels}`
+* **Lectura excel**: paquete `{readxl}`
+* **Resumen numérico**: paquete `{skimr}`.
+* **Visualización de clústers y PCA**: paquete `{factoextra}` y `{FactoMineR}`
+* **Clustering divisivo**: paquete `{cluster}`
+
+```{r paquetes}
+# Borramos variables del environment
+rm(list = ls())
+library(tidyverse)
+library(tidymodels)
+library(readxl)
+library(skimr)
+library(factoextra)
+library(FactoMineR)
+library(cluster)
+```
+
+
+# Carga de datos
+
+El archivo de datos a usar será `provincias.xlsx`
+
+```{r}
+provincias <- read_xlsx(path = "./provincias.xlsx")
+```
+
+El fichero contiene **información socioeconómica de las provincias españolas**
+
+```{r}
+glimpse(provincias)
+```
+
+
+Algunas de las variables son:
+
+* `Prov`: nombre de la provincia
+* `Poblacion`: habitantes
+* `Mortalidad`, `Natalidad`: tasa de mortalidad/natalidad (en tantos por mil)
+* `IPC`: índice de precios de consumo (sobre un valor base de 100).
+* `NumEmpresas`: número de empresas.
+* `PIB`: producto interior bruto
+* `CTH`: coyuntura turística hotelera (pernoctaciones en establecimientos hoteleros)
+
+# Ejercicio 1:
+
+> Calcula la matriz de covarianzas y de correlaciones. Usa el paquete `{corrplot}` para una representación gráfica de la misma. Detalla y comenta lo que consideres para su correcta interpretación.
+
+```{r eval = FALSE}
+# Completa el código
+provincias %>% ...
+```
+
+
+# Ejercicio 2:
+
+> Calcula con `eigen()` los autovalores y autovectores de la matriz de correlaciones e interpreta dichos resultados en relación a las componentes principales de las variables originales.
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+# Ejercicio 3:
+
+> Haciendo uso de `PCA()` del paquete `{FactoMineR}` calcula todas las componentes principales. Repite de nuevo el análisis con el mínimo número de componentes necesarias para capturar al menos el 95% de la información de los datos.
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+
+# Ejercicio 4:
+
+> Realiza las gráficas y análisis numéricos que consideres más útiles para poder interpretar adecuadamente al análisis de componentes principales obtenidas. Detalla todo lo que puedas concluir y, en concreto, responde a las siguientes preguntas
+
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+> ¿Cuál es la expresión para calcular la primera componente en función de las variables originales?
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+> Proporciona las nuevas coordenadas de los datos.
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+> ¿Cuál es la contribución de las variables originales en cada componente principal seleccionada? 
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+> ¿Cuál de las variables es la que está peor explicada en función de las dos primeras componentes?
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+
+
+# Ejercicio 5:
+
+> Si tuviéramos que construir un índice que valorase de forma conjunta el
+desarrollo económico de una provincia, cómo se podría construir utilizando una combinación lineal de todas las variables. ¿Cuál sería el valor de dicho
+índice en Madrid? ¿Cual sería su valor en Melilla? 
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+
+# Ejercicio 6:
+
+> Calcula la matriz de distancias de los datos (realiza las modificaciones que sean necesarias antes). Representa dicha matriz con un mapa de calor. ¿Se detectan inicialmente grupos de provincias? ¿Cuántos?
+
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+
+# Ejercicio 7:
+
+> Realiza al menos tres análisis de clúster jerárquico con distintos enlaces y comenta las diferencias. En cada caso visualiza el dendograma y comenta cuántos clústers recomendarías usar (haciendo uso de la información de apartados anteriores)
+
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+
+# Ejercicio 8:
+
+> Echa un vistazo al final de las diapositivas de clase. ¿Qué número óptimo de clusters nos indican el criterio de Silhoutte y el de la varianza intracluster W? Detalla lo que consideres d ambos criterios y representa los individuos agrupados según el número de clusters elegido.
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+
+# Ejercicio 9:
+
+> Con el número de clusters decidido en el apartado anterior realizar un agrupamiento no jerárquico de k-medias. Representa los clusters formados en los planos de las Componentes principales. Interpreta los resultados y evalúa la calidad del análisis clúster. Explica las provincias que forman cada uno de los clusters y comentar cuales podrían ser las características socioeconómicas que las hacen pertenecer a dicho clúster
+
+```{r eval = FALSE}
+# Completa el código
+```
+
+# Ejercicio 10:
+
+> Comenta o concluye cualquier aspecto que consideres y que no se haya respondido anteriormente.
+
